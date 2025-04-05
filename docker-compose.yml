@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # Main API Server
+  api:
+    build: ./server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AI_TEXT_SERVICE=http://text-analyzer:5000
+      - AI_IMAGE_SERVICE=http://image-analyzer:5001
+      - AI_AUDIO_SERVICE=http://audio-analyzer:5002
+    volumes:
+      - ./server:/app
+      - ./models:/app/models
+    depends_on:
+      - redis
+      - text-analyzer
+      - image-analyzer
+      - audio-analyzer
+
+  # AI Services
+  text-analyzer:
+    build: ./ai-services/text-analysis
+    environment:
+      - HF_API_TOKEN=${HF_API_TOKEN}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  image-analyzer:
+    build: ./ai-services/image-analysis
+    environment:
+      - TF_CPP_MIN_LOG_LEVEL=3
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  audio-analyzer:
+    build: ./ai-services/audio-analysis
+    environment:
+      - DEEFAKE_MODEL_PATH=/models/defake.pb
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  # Supporting Services
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  postgres_data:
+  models:

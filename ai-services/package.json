@@ -1,0 +1,35 @@
+{
+  "name": "truthwhisper-ai-services",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "text-analysis",
+    "image-analysis",
+    "audio-analysis",
+    "shared"
+  ],
+  "scripts": {
+    "install-all": "npm install && npm run install-services",
+    "install-services": "npm install -ws",
+    "build": "npm run build -ws",
+    "start": "concurrently \"npm:start-*\"",
+    "start-text": "npm start --workspace=text-analysis",
+    "start-image": "npm start --workspace=image-analysis",
+    "start-audio": "npm start --workspace=audio-analysis",
+    "test": "npm test -ws",
+    "clean": "rm -rf node_modules && npm run clean -ws",
+    "docker-build": "docker-compose build",
+    "docker-up": "docker-compose up"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.2.1",
+    "eslint": "^8.56.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "google-auth-library": "^9.15.1",
+    "googleapis": "^148.0.0"
+  }
+}
