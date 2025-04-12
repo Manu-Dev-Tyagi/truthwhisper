@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TruthWhisper - Fake News Detector",
   "version": "1.0.0",
-  "description": "Real-time fake news detection for web messaging platforms",
+  "description": "Real-time fake news detection for web messaging platforms.",
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -17,37 +17,27 @@
     "128": "icons/icon128.png"
   },
   "permissions": [
-    "contextMenus",
-    "activeTab",
-    "storage",
     "scripting",
-    "alarms"
+    "activeTab",
+    "contextMenus",
+    "notifications"
   ],
-  "host_permissions": [
-    "https://*.whatsapp.com/*",
-    "https://*.facebook.com/*",
-    "https://*.messenger.com/*",
-    "https://*.twitter.com/*"
-  ],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://*.whatsapp.com/*",
-        "https://*.facebook.com/*",
-        "https://*.messenger.com/*",
-        "https://*.twitter.com/*"
+      "matches": ["http://*/*", "https://*/*"],
+      "exclude_matches": [
+        "*://*.google.com/*",
+        "*://*.microsoft.com/*",
+        "*://*.deepseek.com/*"
       ],
-      "js": ["content.js"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [],
-      "matches": ["<all_urls>"]
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "all_frames": false
     }
   ]
 }

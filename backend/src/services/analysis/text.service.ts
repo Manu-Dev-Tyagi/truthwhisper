@@ -11,7 +11,7 @@ interface AnalysisResult {
 
 export class TextAnalysisService {
   async analyze(content: string): Promise<AnalysisResult> {
-    const url = `${env.AI_TEXT_SERVICE_URL}/analyze-text`;
+    const url = `http://localhost:8000/analyze-text`;
     const payload = { content };
 
     try {

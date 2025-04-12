@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Shield, Settings, History, Ban, CheckCircle, AlertTriangle, X } from "lucide-react";
+import { Shield, Settings, History } from "lucide-react";
 import Dashboard from '@/components/Dashboard';
 import DetectionHistory from '@/components/DetectionHistory';
 import SettingsPanel from '@/components/SettingsPanel';
@@ -32,42 +31,29 @@ const Index = () => {
   const [isExtensionActive, setIsExtensionActive] = useState(true);
 
   useEffect(() => {
-    // Check if we're in a Chrome extension environment
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      // Get latest detection from Chrome storage
       chrome.storage.local.get(['history'], (result) => {
-        if (result.history && result.history.length > 0) {
+        if (result.history?.length > 0) {
           setLatestDetection(result.history[0]);
+        } else {
+          setLatestDetection(null);
         }
       });
 
-      // Listen for storage changes to update UI in real-time
       chrome.storage.onChanged.addListener((changes) => {
-        if (changes.history && changes.history.newValue) {
+        if (changes.history?.newValue?.length > 0) {
           setLatestDetection(changes.history.newValue[0]);
+        } else {
+          setLatestDetection(null);
         }
       });
     } else {
-      // Mock data for development outside of Chrome extension
-      setLatestDetection({
-        timestamp: new Date().toISOString(),
-        content: {
-          text: "Doctors don't want you to know about this miracle cure for all diseases!",
-          imageUrl: null
-        },
-        result: {
-          isFake: true,
-          confidenceScore: 0.85,
-          explanation: "Contains misleading health claims without scientific evidence.",
-          sources: ["Internal pattern detection"]
-        }
-      });
+      setLatestDetection(null); // No mock data for dev mode
     }
   }, []);
 
   const handleExtensionToggle = (enabled: boolean) => {
     setIsExtensionActive(enabled);
-    // In real extension, we would communicate with background script
     if (typeof chrome !== 'undefined' && chrome.runtime) {
       chrome.runtime.sendMessage({ 
         type: 'SET_EXTENSION_ACTIVE', 
